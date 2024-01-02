@@ -2,10 +2,10 @@ function decrypt(data) {
   return "decrypted data";
 }
 
-export function read() {
+function read() {
   return decrypt("data");
 }
 
-// module.exports = {
-//   read,
-// };
+module.exports = {
+  read,
+};
