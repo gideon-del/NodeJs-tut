@@ -16,17 +16,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/timer", (req, res) => {
-  delay(9000);
-  res.send(`Ding Ding Ding: ${process.pid} `);
+  delay(4000);
+  res.send(`beep beep beep: ${process.pid} `);
 });
 
-if (cluster.isMaster) {
-  console.log("Master has been started " + process.pid);
-  const NUM_WORKERS = os.cpus().length;
-  for (let i = 0; i < NUM_WORKERS; i++) {
-    cluster.fork();
-  }
-} else {
-  console.log("Worker process started " + process.pid);
-  app.listen(3000);
-}
+console.log("Master has been started " + process.pid);
+
+console.log("Worker process started " + process.pid);
+app.listen(3000);
