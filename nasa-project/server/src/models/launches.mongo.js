@@ -17,8 +17,23 @@ const launchesSchema = new mongoose.Schema({
     required: true,
   },
   target: {
-    type: mongoose.ObjectId,
-    ref: "Planet",
+    type: String,
+    required: true,
+  },
+  customers: {
+    type: [String],
+  },
+  success: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
+  upcoming: {
+    type: Boolean,
     required: true,
   },
 });
+
+// Connects launches schema to launches collection
+const launchModel = mongoose.model("Launch", launchesSchema);
+module.exports = launchModel;
