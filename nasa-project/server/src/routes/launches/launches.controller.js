@@ -1,13 +1,16 @@
 const {
-  launches,
-  addNewLaunch,
+  getAllLaunches,
   exitsLaunchWithId,
   abortLaunch,
+  scheduleNewLaunch,
 } = require("../../models/launches.model");
-function getAllLaunches(req, res) {
-  return res.status(200).json(Array.from(launches.values()));
+const { getPagination } = require("../../services/query");
+async function httpGetAllLaunches(req, res) {
+  const { limit, skip } = getPagination(req.query);
+  const launches = await getAllLaunches(skip, limit);
+  return res.status(200).json(launches);
 }
-function httpAddNewLaunch(req, res) {
+async function httpAddNewLaunch(req, res) {
   const launch = req.body;
   if (
     !launch.mission ||
@@ -26,23 +29,30 @@ function httpAddNewLaunch(req, res) {
     });
   }
 
-  addNewLaunch(launch);
+  await scheduleNewLaunch(launch);
   return res.status(201).json(launch);
 }
 
-function httpDeleteLaunch(req, res) {
+async function httpDeleteLaunch(req, res) {
   const launchId = Number(req.params.id);
-  if (!exitsLaunchWithId(launchId)) {
+  const existLaunch = await exitsLaunchWithId(launchId);
+  if (!existLaunch) {
     return res.status(404).json({
       error: "Launch not found",
     });
   }
-  const aborted = abortLaunch(launchId);
-
-  return res.status(200).json(aborted);
+  const aborted = await abortLaunch(launchId);
+  if (!aborted) {
+    return res.status(400).json({
+      error: "Launch not aborted",
+    });
+  }
+  return res.status(200).json({
+    ok: true,
+  });
 }
 module.exports = {
-  getAllLaunches,
+  httpGetAllLaunches,
   httpAddNewLaunch,
   httpDeleteLaunch,
 };
